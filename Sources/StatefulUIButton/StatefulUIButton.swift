@@ -9,121 +9,185 @@ import UIKit
 
 @IBDesignable
 public class StatefulUIButton: UIButton {
-
-    // MARK: - Background color per state
-    @IBInspectable public var normalBackgroundColor: UIColor = .clear { didSet { updateBackgrounds() } }
-    @IBInspectable public var highlightedBackgroundColor: UIColor = .clear { didSet { updateBackgrounds() } }
-    @IBInspectable public var selectedBackgroundColor: UIColor = .clear { didSet { updateBackgrounds() } }
-    @IBInspectable public var disabledBackgroundColor: UIColor = .clear { didSet { updateBackgrounds() } }
-
-    // MARK: - Title color per state
-    @IBInspectable public var normalTitleColor: UIColor = .white { didSet { setTitleColorForAllStates() } }
-    @IBInspectable public var highlightedTitleColor: UIColor = .white { didSet { setTitleColorForAllStates() } }
-    @IBInspectable public var selectedTitleColor: UIColor = .white { didSet { setTitleColorForAllStates() } }
-    @IBInspectable public var disabledTitleColor: UIColor = .white { didSet { setTitleColorForAllStates() } }
-
-    // MARK: - Title font per state
-    public var normalTitleFont: UIFont = UIFont.systemFont(ofSize: 17) { didSet { applyFonts() } }
-    public var highlightedTitleFont: UIFont? { didSet { applyFonts() } }
-    public var selectedTitleFont: UIFont? { didSet { applyFonts() } }
-    public var disabledTitleFont: UIFont? { didSet { applyFonts() } }
-
-    // MARK: - Number of lines per state
-    @IBInspectable public var normalTitleLines: Int = 1 { didSet { updateTitleLabelLines() } }
-    @IBInspectable public var highlightedTitleLines: Int = 1 { didSet { updateTitleLabelLines() } }
-    @IBInspectable public var selectedTitleLines: Int = 1 { didSet { updateTitleLabelLines() } }
-    @IBInspectable public var disabledTitleLines: Int = 1 { didSet { updateTitleLabelLines() } }
-
-    // MARK: - Caching
-    private var backgroundImages: [UIControl.State: UIImage] = [:]
-
-    // MARK: - Init
+    
+    // MARK: - State-specific properties
+    @IBInspectable public var normalBackgroundColor: UIColor? {
+        didSet { updateBackgroundColor() }
+    }
+    
+    @IBInspectable public var highlightedBackgroundColor: UIColor? {
+        didSet { updateBackgroundColor() }
+    }
+    
+    @IBInspectable public var selectedBackgroundColor: UIColor? {
+        didSet { updateBackgroundColor() }
+    }
+    
+    @IBInspectable public var disabledBackgroundColor: UIColor? {
+        didSet { updateBackgroundColor() }
+    }
+    
+    @IBInspectable public var normalTitleColor: UIColor? {
+        didSet { updateTitleColor() }
+    }
+    
+    @IBInspectable public var highlightedTitleColor: UIColor? {
+        didSet { updateTitleColor() }
+    }
+    
+    @IBInspectable public var selectedTitleColor: UIColor? {
+        didSet { updateTitleColor() }
+    }
+    
+    @IBInspectable public var disabledTitleColor: UIColor? {
+        didSet { updateTitleColor() }
+    }
+    
+    // MARK: - Font properties
+    @IBInspectable public var normalFont: UIFont? {
+        didSet { updateFont() }
+    }
+    
+    @IBInspectable public var highlightedFont: UIFont? {
+        didSet { updateFont() }
+    }
+    
+    @IBInspectable public var selectedFont: UIFont? {
+        didSet { updateFont() }
+    }
+    
+    @IBInspectable public var disabledFont: UIFont? {
+        didSet { updateFont() }
+    }
+    
+    // MARK: - Number of lines
+    @IBInspectable public var normalNumberOfLines: Int = 1 {
+        didSet { updateNumberOfLines() }
+    }
+    
+    @IBInspectable public var highlightedNumberOfLines: Int = 1 {
+        didSet { updateNumberOfLines() }
+    }
+    
+    @IBInspectable public var selectedNumberOfLines: Int = 1 {
+        didSet { updateNumberOfLines() }
+    }
+    
+    @IBInspectable public var disabledNumberOfLines: Int = 1 {
+        didSet { updateNumberOfLines() }
+    }
+    
+    // MARK: - Initialization
     public override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
     }
-
+    
     public required init?(coder: NSCoder) {
         super.init(coder: coder)
         commonInit()
     }
-
+    
     private func commonInit() {
-        updateBackgrounds()
-        setTitleColorForAllStates()
-        applyFonts()
-        updateTitleLabelLines()
+        // Добавляем наблюдение за изменениями состояния
+        addTarget(self, action: #selector(stateChanged), for: .touchUpInside)
     }
-
-    // MARK: - Helpers
-    private func image(with color: UIColor) -> UIImage {
-        let rect = CGRect(x: 0, y: 0, width: 1, height: 1)
-        UIGraphicsBeginImageContext(rect.size)
-        defer { UIGraphicsEndImageContext() }
-        guard let ctx = UIGraphicsGetCurrentContext() else { return UIImage() }
-        ctx.setFillColor(color.cgColor)
-        ctx.fill(rect)
-        return UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
+    
+    // MARK: - State change handling
+    @objc private func stateChanged() {
+        updateBackgroundColor()
+        updateTitleColor()
+        updateFont()
+        updateNumberOfLines()
     }
-
-    private func updateBackgrounds() {
-        backgroundImages[.normal] = image(with: normalBackgroundColor)
-        backgroundImages[.highlighted] = image(with: highlightedBackgroundColor)
-        backgroundImages[.selected] = image(with: selectedBackgroundColor)
-        backgroundImages[.disabled] = image(with: disabledBackgroundColor)
-        applyBackgroundImages()
-    }
-
-    private func applyBackgroundImages() {
-        for (state, img) in backgroundImages {
-            self.setBackgroundImage(img, for: state)
-        }
-        setNeedsLayout()
-    }
-
-    private func setTitleColorForAllStates() {
-        self.setTitleColor(normalTitleColor, for: .normal)
-        self.setTitleColor(highlightedTitleColor, for: .highlighted)
-        self.setTitleColor(selectedTitleColor, for: .selected)
-        self.setTitleColor(disabledTitleColor, for: .disabled)
-    }
-
-    private func applyFonts() {
-        setTitleFontForState(.normal, font: normalTitleFont)
-        if let hFont = highlightedTitleFont {
-            setTitleFontForState(.highlighted, font: hFont)
-        } else {
-            setTitleFontForState(.highlighted, font: normalTitleFont)
-        }
-        if let sFont = selectedTitleFont {
-            setTitleFontForState(.selected, font: sFont)
-        } else {
-            setTitleFontForState(.selected, font: normalTitleFont)
-        }
-        if let dFont = disabledTitleFont {
-            setTitleFontForState(.disabled, font: dFont)
-        } else {
-            setTitleFontForState(.disabled, font: normalTitleFont)
+    
+    public override var isHighlighted: Bool {
+        didSet {
+            updateBackgroundColor()
+            updateTitleColor()
+            updateFont()
+            updateNumberOfLines()
         }
     }
-
-    private func setTitleFontForState(_ state: UIControl.State, font: UIFont) {
-        if let title = self.title(for: state) {
-            let attributes: [NSAttributedString.Key: Any] = [.font: font]
-            let attributed = NSAttributedString(string: title, attributes: attributes)
-            self.setAttributedTitle(attributed, for: state)
+    
+    public override var isSelected: Bool {
+        didSet {
+            updateBackgroundColor()
+            updateTitleColor()
+            updateFont()
+            updateNumberOfLines()
         }
-        self.titleLabel?.font = font
     }
-
-    private func updateTitleLabelLines() {
-        // Простой подход: применяем для normal. При необходимости можно расширить per-state.
-        self.titleLabel?.numberOfLines = max(1, normalTitleLines)
+    
+    public override var isEnabled: Bool {
+        didSet {
+            updateBackgroundColor()
+            updateTitleColor()
+            updateFont()
+            updateNumberOfLines()
+        }
     }
-
-    // MARK: - IBDesignable preview
-    override public func prepareForInterfaceBuilder() {
+    
+    // MARK: - Update methods
+    private func updateBackgroundColor() {
+        backgroundColor = backgroundColor(for: state)
+    }
+    
+    private func updateTitleColor() {
+        setTitleColor(titleColor(for: state), for: state)
+    }
+    
+    private func updateFont() {
+        titleLabel?.font = font(for: state)
+    }
+    
+    private func updateNumberOfLines() {
+        titleLabel?.numberOfLines = numberOfLines(for: state)
+    }
+    
+    // MARK: - Helper methods
+    private func backgroundColor(for state: UIControl.State) -> UIColor? {
+        switch state {
+        case .highlighted: return highlightedBackgroundColor ?? normalBackgroundColor
+        case .selected: return selectedBackgroundColor ?? normalBackgroundColor
+        case .disabled: return disabledBackgroundColor ?? normalBackgroundColor
+        default: return normalBackgroundColor
+        }
+    }
+    
+    private func titleColor(for state: UIControl.State) -> UIColor? {
+        switch state {
+        case .highlighted: return highlightedTitleColor ?? normalTitleColor
+        case .selected: return selectedTitleColor ?? normalTitleColor
+        case .disabled: return disabledTitleColor ?? normalTitleColor
+        default: return normalTitleColor
+        }
+    }
+    
+    private func font(for state: UIControl.State) -> UIFont? {
+        switch state {
+        case .highlighted: return highlightedFont ?? normalFont
+        case .selected: return selectedFont ?? normalFont
+        case .disabled: return disabledFont ?? normalFont
+        default: return normalFont
+        }
+    }
+    
+    private func numberOfLines(for state: UIControl.State) -> Int {
+        switch state {
+        case .highlighted: return highlightedNumberOfLines
+        case .selected: return selectedNumberOfLines
+        case .disabled: return disabledNumberOfLines
+        default: return normalNumberOfLines
+        }
+    }
+    
+    // MARK: - Interface Builder support
+    public override func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
-        commonInit()
+        updateBackgroundColor()
+        updateTitleColor()
+        updateFont()
+        updateNumberOfLines()
     }
 }

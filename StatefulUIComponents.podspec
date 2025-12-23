@@ -1,10 +1,13 @@
 Pod::Spec.new do |s|
   s.name             = 'StatefulUIComponents'
-  s.version          = '1.0.0'
-  s.summary          = 'A collection of customizable UI components with state-specific properties.'
+  s.version          = '1.2.0' # Обновите версию
+  s.summary          = 'A collection of customizable UI components with state-specific properties, placeholder text views, and IBInspectable extensions.'
   
   s.description      = <<-DESC
-StatefulUIComponents provides a collection of @IBDesignable UI components that allow you to set different properties for each control state (normal, highlighted, selected, disabled) directly from Interface Builder. Includes StatefulUIButton and more.
+StatefulUIComponents provides:
+- @IBDesignable StatefulUIButton with state-specific properties
+- PlaceholderTextView with customizable placeholder
+- Powerful IBInspectable extensions for all UIView subclasses
                        DESC
 
   s.homepage         = 'https://github.com/your-username/StatefulUIComponents'
