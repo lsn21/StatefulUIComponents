@@ -1,30 +1,20 @@
-# StatefulUIComponents/StatefulUIComponents.podspec
-
 Pod::Spec.new do |s|
-  s.name             = "StatefulUIComponents"
-  s.version          = "0.1.0"
-  s.summary          = "Per-state UIButton styling with IBInspectable support."
-  s.description      = "StatefulUIComponents включает StatefulUIButton — UIButton-subclass с per-state фоном, цветом заголовка, шрифтом и количеством строк, с поддержкой IBInspectable/IBDesignable."
-  s.homepage         = "https://github.com/lsn21/StatefulUIComponents"
-  s.license          = { :type => "MIT", :file => "LICENSE" }
+  s.name             = 'StatefulUIComponents'
+  s.version          = '1.0.0'
+  s.summary          = 'A collection of customizable UI components with state-specific properties.'
+  
+  s.description      = <<-DESC
+StatefulUIComponents provides a collection of @IBDesignable UI components that allow you to set different properties for each control state (normal, highlighted, selected, disabled) directly from Interface Builder. Includes StatefulUIButton and more.
+                       DESC
 
-  # Автор оставляем как Sergey Lukyanov
-  s.author           = { "Sergey Lukyanov" => "lsn21@ya.ru" }
-
-  # Источник: локальный репозиторий в рамках подмодуля
-  s.source           = { :git => "https://github.com/lsn21/StatefulUIComponents.git", :tag => "0.1.0" }
-
-  s.platforms = { :ios => "11.0" }
-
-  # Исходники внутри текущей папки
-  s.source_files = "**/*.{swift,h,m}"
-  s.exclude_files = ["**/Examples/**"]
-
-  s.swift_version = "5.0"
-  s.dependency "UIKit"
-
-  s.public_header_files = "**/*.h"
-  s.frameworks = ["UIKit"]
-
-  s.compiler_flags = "-mios-version-min=11.0"
+  s.homepage         = 'https://github.com/your-username/StatefulUIComponents'
+  s.license          = { :type => 'MIT', :file => 'LICENSE' }
+  s.author           = { 'Your Name' => 'your.email@example.com' }
+  s.source           = { :git => 'https://github.com/your-username/StatefulUIComponents.git', :tag => s.version.to_s }
+  
+  s.ios.deployment_target = '11.0'
+  s.swift_version = '5.0'
+  s.source_files = 'Sources/**/*.swift'
+  
+  s.frameworks = 'UIKit'
 end
