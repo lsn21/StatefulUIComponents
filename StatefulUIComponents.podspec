@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'StatefulUIComponents'
-  s.version          = '1.2.0' # Обновите версию
+  s.version          = '1.2.1' # Обновите версию
   s.summary          = 'A collection of customizable UI components with state-specific properties, placeholder text views, and IBInspectable extensions.'
   
   s.description      = <<-DESC
