@@ -17,7 +17,7 @@ public protocol PlaceholderProtocol: AnyObject {
 public class PlaceholderTextView: UITextView {
     
     // MARK: - Public Properties
-    public weak var delegate: PlaceholderProtocol?
+    public weak var placeholderDelegate: PlaceholderProtocol? // ← Изменили имя свойства!
     
     @IBInspectable public var placeholder: String? {
         didSet {
@@ -37,7 +37,7 @@ public class PlaceholderTextView: UITextView {
         }
     }
     
-    // MARK: - IBInspectable для шрифта (чтобы можно было задавать через Interface Builder)
+    // MARK: - IBInspectable для шрифта
     @IBInspectable public var placeholderFontName: String? {
         didSet {
             updatePlaceholderFont()
@@ -66,7 +66,7 @@ public class PlaceholderTextView: UITextView {
 
     // MARK: - Setup Methods
     private func setupPlaceholder() {
-        self.delegate = self
+        super.delegate = self // ← Важно: используем super.delegate
         
         // Создаем placeholder label
         placeholderLabel = UILabel()
@@ -127,7 +127,7 @@ public class PlaceholderTextView: UITextView {
 extension PlaceholderTextView: UITextViewDelegate {
     public func textViewDidChange(_ textView: UITextView) {
         updatePlaceholderVisibility()
-        delegate?.placeholderDelegate()
+        placeholderDelegate?.placeholderDelegate() // ← Вызываем наш кастомный делегат
     }
     
     public func textViewDidBeginEditing(_ textView: UITextView) {
@@ -136,5 +136,11 @@ extension PlaceholderTextView: UITextViewDelegate {
     
     public func textViewDidEndEditing(_ textView: UITextView) {
         updatePlaceholderVisibility()
+    }
+    
+    // Если нужно сохранить возможность использовать стандартный UITextViewDelegate
+    public func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        // Можно добавить логику или передать вызов внешнему делегату
+        return true
     }
 }
