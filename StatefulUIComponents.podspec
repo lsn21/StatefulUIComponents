@@ -17,7 +17,7 @@ StatefulUIComponents provides:
   
   s.ios.deployment_target = '15.0'
   s.swift_version = '5.0'
-  s.source_files = 'Classes/*.swift'
+  s.source_files = '/Classes/*.swift'
   
   s.frameworks = 'UIKit'
 end
