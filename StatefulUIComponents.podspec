@@ -10,14 +10,14 @@ StatefulUIComponents provides:
 - Powerful IBInspectable extensions for all UIView subclasses
                        DESC
 
-  s.homepage         = 'https://github.com/your-username/StatefulUIComponents'
+  s.homepage         = 'https://github.com/lsn21/StatefulUIComponents'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'Your Name' => 'your.email@example.com' }
-  s.source           = { :git => 'https://github.com/your-username/StatefulUIComponents.git', :tag => s.version.to_s }
+  s.author           = { 'Sergey Lukyanov' => 'lsn21@ya.ru' }
+  s.source           = { :git => 'https://github.com/lsn21/StatefulUIComponents.git', :tag => s.version.to_s }
   
-  s.ios.deployment_target = '11.0'
+  s.ios.deployment_target = '15.0'
   s.swift_version = '5.0'
-  s.source_files = 'Sources/**/*.swift'
+  s.source_files = 'Classes/*.swift'
   
   s.frameworks = 'UIKit'
 end
