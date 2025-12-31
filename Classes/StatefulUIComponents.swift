@@ -1,14 +1,15 @@
 //
 //  StatefulUIComponents.swift
 //
-//  Created by Siarhei Lukyanau on 23.12.25.
+//  Created by Siarhei Lukyanau on 31.12.25.
 //
 
 import UIKit
+import WebKit
 
 public final class StatefulUIComponents {
     public static func initialize() {
-        UIView.swizzleMethods()
+        UIView.swizzleViewMethods()
         WKWebView.swizzleWebViewMethods()
     }
 }

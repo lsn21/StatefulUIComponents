@@ -19,31 +19,31 @@ public extension WKWebView {
     // MARK: - Border Properties
     
     /// Name of the border color from assets
-    @IBInspectable var borderColorName: String? {
+    @IBInspectable var webViewBorderColorName: String? {
         get {
             return objc_getAssociatedObject(self, &WKWebViewAssociatedKeys.borderColorName) as? String
         }
         set {
             objc_setAssociatedObject(self, &WKWebViewAssociatedKeys.borderColorName, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            updateBorderColor()
+            updateWebViewBorderColor()
         }
     }
     
     /// Border color through UIColor
-    @IBInspectable var borderUIColor: UIColor? {
+    @IBInspectable var webViewBorderUIColor: UIColor? {
         get {
             return UIColor(cgColor: layer.borderColor ?? UIColor.clear.cgColor)
         }
         set {
             layer.borderColor = newValue?.cgColor
             if newValue != nil {
-                borderColorName = nil
+                webViewBorderColorName = nil
             }
         }
     }
     
     /// Border width
-    @IBInspectable var borderWidthIB: CGFloat {
+    @IBInspectable var webViewBorderWidth: CGFloat {
         get {
             return layer.borderWidth
         }
@@ -55,7 +55,7 @@ public extension WKWebView {
     // MARK: - Corner Radius Properties
     
     /// Corner radius for all corners
-    @IBInspectable var cornerRadiusIB: CGFloat {
+    @IBInspectable var webViewCornerRadius: CGFloat {
         get {
             return layer.cornerRadius
         }
@@ -68,73 +68,73 @@ public extension WKWebView {
     }
     
     /// Enable/disable top-left corner rounding
-    @IBInspectable var topLeftCorner: Bool {
+    @IBInspectable var webViewTopLeftCorner: Bool {
         get {
-            return getCornerState(for: .topLeft)
+            return getWebViewCornerState(for: .topLeft)
         }
         set {
-            setCornerState(newValue, for: .topLeft)
+            setWebViewCornerState(newValue, for: .topLeft)
         }
     }
     
     /// Enable/disable top-right corner rounding
-    @IBInspectable var topRightCorner: Bool {
+    @IBInspectable var webViewTopRightCorner: Bool {
         get {
-            return getCornerState(for: .topRight)
+            return getWebViewCornerState(for: .topRight)
         }
         set {
-            setCornerState(newValue, for: .topRight)
+            setWebViewCornerState(newValue, for: .topRight)
         }
     }
     
     /// Enable/disable bottom-left corner rounding
-    @IBInspectable var bottomLeftCorner: Bool {
+    @IBInspectable var webViewBottomLeftCorner: Bool {
         get {
-            return getCornerState(for: .bottomLeft)
+            return getWebViewCornerState(for: .bottomLeft)
         }
         set {
-            setCornerState(newValue, for: .bottomLeft)
+            setWebViewCornerState(newValue, for: .bottomLeft)
         }
     }
     
     /// Enable/disable bottom-right corner rounding
-    @IBInspectable var bottomRightCorner: Bool {
+    @IBInspectable var webViewBottomRightCorner: Bool {
         get {
-            return getCornerState(for: .bottomRight)
+            return getWebViewCornerState(for: .bottomRight)
         }
         set {
-            setCornerState(newValue, for: .bottomRight)
+            setWebViewCornerState(newValue, for: .bottomRight)
         }
     }
     
     // MARK: - Shadow Properties
     
     /// Name of the shadow color from assets
-    @IBInspectable var shadowColorName: String? {
+    @IBInspectable var webViewShadowColorName: String? {
         get {
             return objc_getAssociatedObject(self, &WKWebViewAssociatedKeys.shadowColorName) as? String
         }
         set {
             objc_setAssociatedObject(self, &WKWebViewAssociatedKeys.shadowColorName, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            updateShadowColor()
+            updateWebViewShadowColor()
         }
     }
     
     /// Shadow color through UIColor
-    @IBInspectable var shadowUIColor: UIColor? {
+    @IBInspectable var webViewShadowUIColor: UIColor? {
         get {
             return UIColor(cgColor: layer.shadowColor ?? UIColor.clear.cgColor)
         }
         set {
             layer.shadowColor = newValue?.cgColor
             if newValue != nil {
-                shadowColorName = nil
+                webViewShadowColorName = nil
             }
         }
     }
     
     /// Shadow offset
-    @IBInspectable var shadowOffsetIB: CGSize {
+    @IBInspectable var webViewShadowOffset: CGSize {
         get {
             return layer.shadowOffset
         }
@@ -144,7 +144,7 @@ public extension WKWebView {
     }
     
     /// Shadow opacity
-    @IBInspectable var shadowOpacityIB: Float {
+    @IBInspectable var webViewShadowOpacity: Float {
         get {
             return layer.shadowOpacity
         }
@@ -154,7 +154,7 @@ public extension WKWebView {
     }
     
     /// Shadow radius
-    @IBInspectable var shadowRadiusIB: CGFloat {
+    @IBInspectable var webViewShadowRadius: CGFloat {
         get {
             return layer.shadowRadius
         }
@@ -166,53 +166,53 @@ public extension WKWebView {
     // MARK: - Background Color Properties
     
     /// Background color name from assets
-    @IBInspectable var backgroundColorName: String? {
+    @IBInspectable var webViewBackgroundColorName: String? {
         get {
             return objc_getAssociatedObject(self, &WKWebViewAssociatedKeys.backgroundColorName) as? String
         }
         set {
             objc_setAssociatedObject(self, &WKWebViewAssociatedKeys.backgroundColorName, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            updateBackgroundColor()
+            updateWebViewBackgroundColor()
         }
     }
     
     /// Background color through UIColor
-    @IBInspectable var backgroundUIColor: UIColor? {
+    @IBInspectable var webViewBackgroundUIColor: UIColor? {
         get {
             return self.backgroundColor
         }
         set {
             self.backgroundColor = newValue
             if newValue != nil {
-                backgroundColorName = nil
+                webViewBackgroundColorName = nil
             }
         }
     }
     
     // MARK: - Private Methods
     
-    private func updateBorderColor() {
-        guard let colorName = borderColorName, let color = UIColor(named: colorName) else {
+    private func updateWebViewBorderColor() {
+        guard let colorName = webViewBorderColorName, let color = UIColor(named: colorName) else {
             return
         }
         layer.borderColor = color.cgColor
     }
     
-    private func updateShadowColor() {
-        guard let colorName = shadowColorName, let color = UIColor(named: colorName) else {
+    private func updateWebViewShadowColor() {
+        guard let colorName = webViewShadowColorName, let color = UIColor(named: colorName) else {
             return
         }
         layer.shadowColor = color.cgColor
     }
     
-    private func updateBackgroundColor() {
-        guard let colorName = backgroundColorName, let color = UIColor(named: colorName) else {
+    private func updateWebViewBackgroundColor() {
+        guard let colorName = webViewBackgroundColorName, let color = UIColor(named: colorName) else {
             return
         }
         self.backgroundColor = color
     }
     
-    private func getCornerState(for corner: UIRectCorner) -> Bool {
+    private func getWebViewCornerState(for corner: UIRectCorner) -> Bool {
         let mask = layer.maskedCorners
         switch corner {
         case .topLeft:
@@ -228,7 +228,7 @@ public extension WKWebView {
         }
     }
     
-    private func setCornerState(_ enabled: Bool, for corner: UIRectCorner) {
+    private func setWebViewCornerState(_ enabled: Bool, for corner: UIRectCorner) {
         var mask = layer.maskedCorners
         
         switch corner {
@@ -267,7 +267,7 @@ public extension WKWebView {
     // MARK: - Public Methods
     
     /// Apply rounded corners to specific corners with radius
-    func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
+    func webViewRoundCorners(_ corners: UIRectCorner, radius: CGFloat) {
         let path = UIBezierPath(roundedRect: bounds, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
         let mask = CAShapeLayer()
         mask.path = path.cgPath
@@ -275,7 +275,7 @@ public extension WKWebView {
     }
     
     /// Apply shadow with custom parameters
-    func applyShadow(color: UIColor, opacity: Float, radius: CGFloat, offset: CGSize) {
+    func webViewApplyShadow(color: UIColor, opacity: Float, radius: CGFloat, offset: CGSize) {
         layer.shadowColor = color.cgColor
         layer.shadowOpacity = opacity
         layer.shadowRadius = radius
@@ -284,7 +284,7 @@ public extension WKWebView {
     }
     
     /// Remove all shadows
-    func removeShadow() {
+    func webViewRemoveShadow() {
         layer.shadowColor = nil
         layer.shadowOpacity = 0
         layer.shadowRadius = 0
@@ -292,19 +292,19 @@ public extension WKWebView {
     }
     
     /// Add border with color and width
-    func addBorder(color: UIColor, width: CGFloat) {
+    func webViewAddBorder(color: UIColor, width: CGFloat) {
         layer.borderColor = color.cgColor
         layer.borderWidth = width
     }
     
     /// Remove border
-    func removeBorder() {
+    func webViewRemoveBorder() {
         layer.borderColor = nil
         layer.borderWidth = 0
     }
     
     /// Apply gradient background
-    func applyGradient(colors: [UIColor], startPoint: CGPoint = CGPoint(x: 0.5, y: 0), endPoint: CGPoint = CGPoint(x: 0.5, y: 1)) {
+    func webViewApplyGradient(colors: [UIColor], startPoint: CGPoint = CGPoint(x: 0.5, y: 0), endPoint: CGPoint = CGPoint(x: 0.5, y: 1)) {
         let gradientLayer = CAGradientLayer()
         gradientLayer.frame = bounds
         gradientLayer.colors = colors.map { $0.cgColor }
@@ -318,22 +318,22 @@ public extension WKWebView {
     }
     
     /// Remove gradient background
-    func removeGradient() {
+    func webViewRemoveGradient() {
         layer.sublayers?.filter { $0 is CAGradientLayer }.forEach { $0.removeFromSuperlayer() }
     }
     
     // MARK: - Lifecycle Methods
     
     internal func webViewAwakeFromNib() {
-        updateBorderColor()
-        updateShadowColor()
-        updateBackgroundColor()
+        updateWebViewBorderColor()
+        updateWebViewShadowColor()
+        updateWebViewBackgroundColor()
     }
     
     internal func webViewPrepareForInterfaceBuilder() {
-        updateBorderColor()
-        updateShadowColor()
-        updateBackgroundColor()
+        updateWebViewBorderColor()
+        updateWebViewShadowColor()
+        updateWebViewBackgroundColor()
     }
 }
 
