@@ -19,5 +19,5 @@ StatefulUIComponents provides:
   s.swift_version = '5.0'
   s.source_files = 'Classes/**/*.swift'
   
-  s.frameworks = 'UIKit'
+  s.frameworks = 'UIKit', 'WebKit'
 end
