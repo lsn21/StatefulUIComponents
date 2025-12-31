@@ -9,5 +9,6 @@ import UIKit
 public final class StatefulUIComponents {
     public static func initialize() {
         UIView.swizzleMethods()
+        WKWebView.swizzleWebViewMethods()
     }
 }
