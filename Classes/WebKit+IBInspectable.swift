@@ -7,169 +7,23 @@
 import WebKit
 import UIKit
 
-// MARK: - Associated Keys
+// MARK: - Associated Keys for WKWebView specific properties
 private struct WKWebViewAssociatedKeys {
-    static var borderColorName = "borderColorName"
-    static var cornerRadiusName = "cornerRadiusName"
-    static var shadowColorName = "shadowColorName"
+    static var webBackgroundColorName = "webBackgroundColorName"
 }
 
-// MARK: - IBInspectable Extension for WKWebView
+// MARK: - IBInspectable Extension for WKWebView (только специфичные свойства)
 public extension WKWebView {
     
-    // MARK: - Border Properties
-    
-    /// Border color through named colors (Interface Builder compatible)
-    @IBInspectable var borderColorName: String? {
-        get {
-            return objc_getAssociatedObject(self, &WKWebViewAssociatedKeys.borderColorName) as? String
-        }
-        set {
-            objc_setAssociatedObject(self, &WKWebViewAssociatedKeys.borderColorName, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            updateBorderColor()
-        }
-    }
-    
-    /// Border color through UIColor (Interface Builder compatible)
-    @IBInspectable var borderUIColor: UIColor? {
-        get {
-            guard let cgColor = layer.borderColor else { return nil }
-            return UIColor(cgColor: cgColor)
-        }
-        set {
-            layer.borderColor = newValue?.cgColor
-            if newValue != nil {
-                borderColorName = nil // Clear named color when using direct color
-            }
-        }
-    }
-    
-    /// Border width (Interface Builder compatible)
-    @IBInspectable var borderWidthIB: CGFloat {
-        get { return layer.borderWidth }
-        set { layer.borderWidth = newValue }
-    }
-    
-    // MARK: - Corner Radius Properties
-    
-    /// Corner radius (Interface Builder compatible)
-    @IBInspectable var cornerRadiusIB: CGFloat {
-        get { return layer.cornerRadius }
-        set {
-            layer.cornerRadius = newValue
-            if cornerRadiusIB > 0 {
-                layer.masksToBounds = true
-            }
-        }
-    }
-    
-    /// Individual corner properties for Interface Builder
-    @IBInspectable var topLeftCorner: Bool {
-        get { return layer.maskedCorners.contains(.layerMinXMinYCorner) }
-        set {
-            var corners = layer.maskedCorners
-            if newValue {
-                corners.insert(.layerMinXMinYCorner)
-            } else {
-                corners.remove(.layerMinXMinYCorner)
-            }
-            layer.maskedCorners = corners
-        }
-    }
-    
-    @IBInspectable var topRightCorner: Bool {
-        get { return layer.maskedCorners.contains(.layerMaxXMinYCorner) }
-        set {
-            var corners = layer.maskedCorners
-            if newValue {
-                corners.insert(.layerMaxXMinYCorner)
-            } else {
-                corners.remove(.layerMaxXMinYCorner)
-            }
-            layer.maskedCorners = corners
-        }
-    }
-    
-    @IBInspectable var bottomLeftCorner: Bool {
-        get { return layer.maskedCorners.contains(.layerMinXMaxYCorner) }
-        set {
-            var corners = layer.maskedCorners
-            if newValue {
-                corners.insert(.layerMinXMaxYCorner)
-            } else {
-                corners.remove(.layerMinXMaxYCorner)
-            }
-            layer.maskedCorners = corners
-        }
-    }
-    
-    @IBInspectable var bottomRightCorner: Bool {
-        get { return layer.maskedCorners.contains(.layerMaxXMaxYCorner) }
-        set {
-            var corners = layer.maskedCorners
-            if newValue {
-                corners.insert(.layerMaxXMaxYCorner)
-            } else {
-                corners.remove(.layerMaxXMaxYCorner)
-            }
-            layer.maskedCorners = corners
-        }
-    }
-    
-    // MARK: - Shadow Properties
-    
-    /// Shadow color through named colors (Interface Builder compatible)
-    @IBInspectable var shadowColorName: String? {
-        get {
-            return objc_getAssociatedObject(self, &WKWebViewAssociatedKeys.shadowColorName) as? String
-        }
-        set {
-            objc_setAssociatedObject(self, &WKWebViewAssociatedKeys.shadowColorName, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-            updateShadowColor()
-        }
-    }
-    
-    /// Shadow color through UIColor (Interface Builder compatible)
-    @IBInspectable var shadowUIColor: UIColor? {
-        get {
-            guard let cgColor = layer.shadowColor else { return nil }
-            return UIColor(cgColor: cgColor)
-        }
-        set {
-            layer.shadowColor = newValue?.cgColor
-            if newValue != nil {
-                shadowColorName = nil
-            }
-        }
-    }
-    
-    /// Shadow offset (Interface Builder compatible)
-    @IBInspectable var shadowOffsetIB: CGSize {
-        get { return layer.shadowOffset }
-        set { layer.shadowOffset = newValue }
-    }
-    
-    /// Shadow opacity (Interface Builder compatible)
-    @IBInspectable var shadowOpacityIB: Float {
-        get { return layer.shadowOpacity }
-        set { layer.shadowOpacity = newValue }
-    }
-    
-    /// Shadow radius (Interface Builder compatible)
-    @IBInspectable var shadowRadiusIB: CGFloat {
-        get { return layer.shadowRadius }
-        set { layer.shadowRadius = newValue }
-    }
-    
-    // MARK: - Background Color for WebView Content
+    // MARK: - WebView Specific Background Color Properties
     
     /// Background color name for web content (affects webpage background)
     @IBInspectable var webBackgroundColorName: String? {
         get {
-            return objc_getAssociatedObject(self, &WKWebViewAssociatedKeys.cornerRadiusName) as? String
+            return objc_getAssociatedObject(self, &WKWebViewAssociatedKeys.webBackgroundColorName) as? String
         }
         set {
-            objc_setAssociatedObject(self, &WKWebViewAssociatedKeys.cornerRadiusName, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &WKWebViewAssociatedKeys.webBackgroundColorName, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             updateWebBackgroundColor()
         }
     }
@@ -188,20 +42,6 @@ public extension WKWebView {
     }
     
     // MARK: - Private Methods
-    
-    private func updateBorderColor() {
-        guard let colorName = borderColorName, let color = UIColor(named: colorName) else {
-            return
-        }
-        layer.borderColor = color.cgColor
-    }
-    
-    private func updateShadowColor() {
-        guard let colorName = shadowColorName, let color = UIColor(named: colorName) else {
-            return
-        }
-        layer.shadowColor = color.cgColor
-    }
     
     private func updateWebBackgroundColor() {
         guard let colorName = webBackgroundColorName, let color = UIColor(named: colorName) else {
@@ -250,14 +90,10 @@ public extension WKWebView {
     // MARK: - Lifecycle Methods
     
     internal func webViewAwakeFromNib() {
-        updateBorderColor()
-        updateShadowColor()
         updateWebBackgroundColor()
     }
     
     internal func webViewPrepareForInterfaceBuilder() {
-        updateBorderColor()
-        updateShadowColor()
         updateWebBackgroundColor()
         
         // Load sample content for Interface Builder preview
@@ -270,22 +106,6 @@ public extension WKWebView {
         </html>
         """
         loadHTMLString(sampleHTML, baseURL: nil)
-    }
-}
-
-// MARK: - UIColor Extension for Hex Conversion
-private extension UIColor {
-    var hexString: String {
-        var r: CGFloat = 0
-        var g: CGFloat = 0
-        var b: CGFloat = 0
-        var a: CGFloat = 0
-        
-        getRed(&r, green: &g, blue: &b, alpha: &a)
-        
-        let rgb: Int = (Int)(r * 255) << 16 | (Int)(g * 255) << 8 | (Int)(b * 255) << 0
-        
-        return String(format: "#%06x", rgb)
     }
 }
 
@@ -331,29 +151,5 @@ public extension WKWebView {
         let config = WKWebViewConfiguration()
         config.applicationNameForUserAgent = userAgent
         return WKWebView(frame: .zero, configuration: config)
-    }
-}
-
-// MARK: - Usage Example
-class WebViewViewController: UIViewController {
-    @IBOutlet weak var webView: WKWebView!
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Apply swizzling (call once, e.g., in AppDelegate)
-        WKWebView.swizzleWebViewMethods()
-        
-        // Configure web view through IBInspectable properties
-        // These can be set directly in Interface Builder
-        webView.cornerRadiusIB = 8
-        webView.borderWidthIB = 1
-        webView.borderColorName = "BorderColor"
-        webView.webBackgroundColorName = "BackgroundColor"
-        
-        // Load content
-        if let url = URL(string: "https://example.com") {
-            webView.load(URLRequest(url: url))
-        }
     }
 }
