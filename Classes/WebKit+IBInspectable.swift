@@ -1,10 +1,10 @@
 //
-//  UIView+IBInspectable.swift
+//  WebKit+IBInspectable.swift
 //
 //  Created by Siarhei Lukyanau on 23.12.25.
 //
 
-import UIKit
+import WebKit
 
 // MARK: - Associated Keys
 private struct UIViewAssociatedKeys {
@@ -12,7 +12,7 @@ private struct UIViewAssociatedKeys {
 }
 
 // MARK: - IBInspectable Extension
-public extension UIView {
+public extension WebKit {
     
     // MARK: - Border Color через named colors
     @IBInspectable var borderColorName: String? {
