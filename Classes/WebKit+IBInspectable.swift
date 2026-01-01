@@ -1,5 +1,6 @@
 //
 //  WebKit+IBInspectable.swift
+//  StatefulUIComponents
 //
 //  Created by Siarhei Lukyanau on 31.12.25.
 //

@@ -1,6 +1,6 @@
 //
 //  PlaceholderTextView.swift
-//  StatefulUIComponentsExample
+//  StatefulUIComponents
 //
 //  Created by Siarhei Lukyanau on 23.12.25.
 //

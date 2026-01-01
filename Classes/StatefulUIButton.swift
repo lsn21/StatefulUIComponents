@@ -1,6 +1,6 @@
 //
 //  StatefulUIButton.swift
-//  Loans-202
+//  StatefulUIComponents
 //
 //  Created by Siarhei Lukyanau on 22.12.25.
 //
@@ -60,20 +60,20 @@ public class StatefulUIButton: UIButton {
         didSet { updateFont() }
     }
     
-    // MARK: - Number of lines
-    public var normalNumberOfLines: Int = 1 {
+    // MARK: - Number of lines (IB compatible)
+    @IBInspectable public var normalNumberOfLines: Int = 1 {
         didSet { updateNumberOfLines() }
     }
     
-    public var highlightedNumberOfLines: Int = 1 {
+    @IBInspectable public var highlightedNumberOfLines: Int = 1 {
         didSet { updateNumberOfLines() }
     }
     
-    public var selectedNumberOfLines: Int = 1 {
+    @IBInspectable public var selectedNumberOfLines: Int = 1 {
         didSet { updateNumberOfLines() }
     }
     
-    public var disabledNumberOfLines: Int = 1 {
+    @IBInspectable public var disabledNumberOfLines: Int = 1 {
         didSet { updateNumberOfLines() }
     }
     

@@ -1,5 +1,6 @@
 //
 //  UIView+IBInspectable.swift
+//  StatefulUIComponents
 //
 //  Created by Siarhei Lukyanau on 23.12.25.
 //
