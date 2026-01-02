@@ -127,7 +127,7 @@ class BlurToggleLabel: UILabel {
     
     // MARK: - Blurred Image Creation
     private func createBlurredImageView() -> UIImageView? {
-        guard let text = self.text else { return nil }
+        guard let originalText = self.originalText, !originalText.isEmpty else { return nil }
         
         // Создаем атрибуты текста
         let attributes: [NSAttributedString.Key: Any] = [
@@ -136,30 +136,32 @@ class BlurToggleLabel: UILabel {
         ]
         
         // Создаем атрибутированную строку
-        let attributedString = NSAttributedString(string: text, attributes: attributes)
+        let attributedString = NSAttributedString(string: originalText, attributes: attributes)
         
         // Определяем размер текста
         let size = attributedString.size()
         
         // Создаем графический контекст
         UIGraphicsBeginImageContext(size)
-        let context = UIGraphicsGetCurrentContext()
+        defer { UIGraphicsEndImageContext() }
+        
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
         
         // Рисуем текст в контексте
-        context?.saveGState()
-        context?.translateBy(x: 0, y: 0)
-        context?.scaleBy(x: 1.0, y: 1.0)
+        context.saveGState()
+        context.translateBy(x: 0, y: 0)
+        context.scaleBy(x: 1.0, y: 1.0)
         
         // Рисуем текст
-        context?.setTextDrawingMode(.fill)
+        context.setTextDrawingMode(.fill)
         attributedString.draw(at: CGPoint(x: 0, y: 0))
+        context.restoreGState()
         
         // Получаем изображение
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
         
         // Создаем CIImage из UIImage
-        guard let ciImage = CIImage(image: image!) else { return nil }
+        guard let ciImage = CIImage(image: image) else { return nil }
         
         // Применяем размытие
         let filter = CIFilter(name: "CIGaussianBlur")!
@@ -167,16 +169,16 @@ class BlurToggleLabel: UILabel {
         filter.setValue(blurRadius, forKey: kCIInputRadiusKey)
         
         // Получаем размытую картинку
-        let outputImage = filter.outputImage!
+        guard let outputImage = filter.outputImage else { return nil }
         
         // Создаем UIImage из CIImage
         let context2 = CIContext()
-        let cgImage = context2.createCGImage(outputImage, from: outputImage.extent)!
+        guard let cgImage = context2.createCGImage(outputImage, from: outputImage.extent) else { return nil }
         let blurredImage = UIImage(cgImage: cgImage)
 
         // Создаем UIImageView для размытого текста
         let blurredImageView = UIImageView(image: blurredImage)
-        blurredImageView.frame = CGRect(origin: .zero, size: size)
+        blurredImageView.frame = CGRect(origin: CGPoint(x: 0, y: 6.4), size: size)
         blurredImageView.contentMode = .scaleToFill
         
         return blurredImageView
