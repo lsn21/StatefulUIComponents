@@ -5,6 +5,13 @@
 //  Created by Siarhei Lukyanau on 2.01.26.
 //
 
+//
+//  BlurToggleLabel.swift
+//  LoansHelpers
+//
+//  Created by Siarhei Lukyanau on 31.10.25.
+//
+
 import UIKit
 
 @IBDesignable
@@ -12,7 +19,7 @@ class BlurToggleLabel: UILabel {
     
     // MARK: - IBInspectable Properties
     
-    @IBInspectable var blurRadius: CGFloat = 5.0 {
+    @IBInspectable var blurRadius: CGFloat = 3.5 {
         didSet {
             if isBlurred {
                 updateBlurredState()
@@ -26,32 +33,11 @@ class BlurToggleLabel: UILabel {
         }
     }
     
-    @IBInspectable var animationDuration: Double = 0.3 {
-        didSet {
-            // Обновляем анимацию если нужно
-        }
-    }
+    @IBInspectable var animationDuration: Double = 0.3
     
     @IBInspectable var enableTapGesture: Bool = true {
         didSet {
             setupTapGesture()
-        }
-    }
-    
-    @IBInspectable var blurColor: UIColor = .clear {
-        didSet {
-            if isBlurred {
-                updateBlurredState()
-            }
-        }
-    }
-    
-    // Прозрачность оригинального текста в размытом состоянии
-    @IBInspectable var originalTextAlphaWhenBlurred: CGFloat = 0.0 {
-        didSet {
-            if isBlurred {
-                updateBlurredState()
-            }
         }
     }
     
@@ -77,7 +63,6 @@ class BlurToggleLabel: UILabel {
     
     // MARK: - Setup Methods
     private func setupTapGesture() {
-        // Удаляем старый жест если есть
         if let tapGesture = tapGesture {
             removeGestureRecognizer(tapGesture)
         }
@@ -117,23 +102,23 @@ class BlurToggleLabel: UILabel {
         blurredImageView = blurredView
         addSubview(blurredView)
         
+        // Прячем оригинальный текст
+        text = ""
+        
         // Анимация появления размытия
         blurredView.alpha = 0
-        blurredView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
-        
         UIView.animate(withDuration: animationDuration) {
             blurredView.alpha = 1
-            blurredView.transform = .identity
-            self.alpha = self.originalTextAlphaWhenBlurred
         }
     }
     
     private func updateNormalState() {
-        // Анимация возврата к нормальному состоянию
+        // Возвращаем оригинальный текст
+        text = originalText
+        
+        // Анимация исчезновения размытия
         UIView.animate(withDuration: animationDuration) {
             self.blurredImageView?.alpha = 0
-            self.blurredImageView?.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
-            self.alpha = 1.0
         } completion: { _ in
             self.blurredImageView?.removeFromSuperview()
             self.blurredImageView = nil
@@ -142,157 +127,81 @@ class BlurToggleLabel: UILabel {
     
     // MARK: - Blurred Image Creation
     private func createBlurredImageView() -> UIImageView? {
-        guard let text = self.text, !text.isEmpty else { return nil }
+        guard let originalText = self.originalText, !originalText.isEmpty else { return nil }
         
-        // Используем текущие размеры label для создания изображения
-        let imageSize = bounds.size
+        // Создаем атрибуты текста
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: self.font as Any,
+            .foregroundColor: self.textColor as Any
+        ]
         
-        // Создаем графический контекст с прозрачным фоном
-        UIGraphicsBeginImageContextWithOptions(imageSize, false, 0.0)
+        // Создаем атрибутированную строку
+        let attributedString = NSAttributedString(string: originalText, attributes: attributes)
+        
+        // Определяем размер текста
+        let size = attributedString.size()
+        
+        // Создаем графический контекст
+        UIGraphicsBeginImageContext(size)
         defer { UIGraphicsEndImageContext() }
         
         guard let context = UIGraphicsGetCurrentContext() else { return nil }
         
-        // Очищаем фон (делаем полностью прозрачным)
-        context.clear(CGRect(origin: .zero, size: imageSize))
-        
-        // Если задан цвет фона размытия - рисуем его
-        if blurColor != .clear {
-            context.setFillColor(blurColor.cgColor)
-            context.fill(CGRect(origin: .zero, size: imageSize))
-        }
-        
-        // Рисуем текст в центре label (как он рисуется обычно)
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = self.textAlignment
-        paragraphStyle.lineBreakMode = self.lineBreakMode
-        
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: self.font ?? UIFont.systemFont(ofSize: 17),
-            .foregroundColor: self.textColor ?? UIColor.black,
-            .paragraphStyle: paragraphStyle
-        ]
-        
-        let attributedString = NSAttributedString(string: text, attributes: attributes)
-        
-        // Рассчитываем прямоугольник для текста с учетом выравнивания
-        let textRect: CGRect
-        if numberOfLines == 1 {
-            // Для однострочного текста
-            textRect = attributedString.boundingRect(
-                with: CGSize(width: CGFloat.greatestFiniteMagnitude, height: imageSize.height),
-                options: [.usesLineFragmentOrigin, .usesFontLeading],
-                context: nil
-            )
-        } else {
-            // Для многострочного текста
-            textRect = attributedString.boundingRect(
-                with: CGSize(width: imageSize.width, height: CGFloat.greatestFiniteMagnitude),
-                options: [.usesLineFragmentOrigin, .usesFontLeading],
-                context: nil
-            )
-        }
-        
-        // Позиционируем текст в зависимости от выравнивания
-        var drawingRect = CGRect.zero
-        drawingRect.size = textRect.size
-        
-        // Горизонтальное выравнивание
-        switch textAlignment {
-        case .left:
-            drawingRect.origin.x = 0
-        case .right:
-            drawingRect.origin.x = imageSize.width - textRect.width
-        case .center:
-            drawingRect.origin.x = (imageSize.width - textRect.width) / 2
-        default:
-            drawingRect.origin.x = 0
-        }
-        
-        // Вертикальное выравнивание
-        drawingRect.origin.y = (imageSize.height - textRect.height) / 2
+        // Рисуем текст в контексте
+        context.saveGState()
+        context.translateBy(x: 0, y: 0)
+        context.scaleBy(x: 1.0, y: 1.0)
         
         // Рисуем текст
-        attributedString.draw(in: drawingRect)
+        context.setTextDrawingMode(.fill)
+        attributedString.draw(at: CGPoint(x: 0, y: 0))
+        context.restoreGState()
         
-        guard let originalImage = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
+        // Получаем изображение
+        guard let image = UIGraphicsGetImageFromCurrentImageContext() else { return nil }
         
-        // Применяем размытие к изображению
-        guard let ciImage = CIImage(image: originalImage) else { return nil }
+        // Создаем CIImage из UIImage
+        guard let ciImage = CIImage(image: image) else { return nil }
         
+        // Применяем размытие
         let filter = CIFilter(name: "CIGaussianBlur")!
         filter.setValue(ciImage, forKey: kCIInputImageKey)
         filter.setValue(blurRadius, forKey: kCIInputRadiusKey)
         
+        // Получаем размытую картинку
         guard let outputImage = filter.outputImage else { return nil }
         
         // Создаем UIImage из CIImage
-        let ciContext = CIContext()
-        guard let cgImage = ciContext.createCGImage(outputImage, from: outputImage.extent) else { return nil }
-        
+        let context2 = CIContext()
+        guard let cgImage = context2.createCGImage(outputImage, from: outputImage.extent) else { return nil }
         let blurredImage = UIImage(cgImage: cgImage)
-        
+
         // Создаем UIImageView для размытого текста
         let blurredImageView = UIImageView(image: blurredImage)
-        blurredImageView.frame = bounds
-        blurredImageView.contentMode = .center
-        blurredImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        blurredImageView.frame = CGRect(origin: CGPoint(x: 0, y: 6.4), size: size)
+        blurredImageView.contentMode = .scaleToFill
         
         return blurredImageView
     }
     
-    // MARK: - Layout Methods
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        // Обновляем размер размытого изображения при изменении layout
-        if isBlurred {
-            updateBlurredImageViewFrame()
+    // MARK: - Original Text Storage
+    private var originalText: String? {
+        // Сохраняем оригинальный текст перед размытием
+        if _originalText == nil {
+            _originalText = super.text
         }
+        return _originalText
     }
     
-    private func updateBlurredImageViewFrame() {
-        blurredImageView?.frame = bounds
-    }
+    private var _originalText: String?
     
-    // MARK: - Property Observers
     override var text: String? {
-        didSet {
-            if isBlurred {
-                updateBlurredState()
-            }
+        get {
+            return super.text
         }
-    }
-    
-    override var font: UIFont! {
-        didSet {
-            if isBlurred {
-                updateBlurredState()
-            }
-        }
-    }
-    
-    override var textColor: UIColor! {
-        didSet {
-            if isBlurred {
-                updateBlurredState()
-            }
-        }
-    }
-    
-    override var textAlignment: NSTextAlignment {
-        didSet {
-            if isBlurred {
-                updateBlurredState()
-            }
-        }
-    }
-    
-    override var numberOfLines: Int {
-        didSet {
-            if isBlurred {
-                updateBlurredState()
-            }
+        set {
+            _originalText = newValue
+            super.text = newValue
         }
     }
     
@@ -315,14 +224,8 @@ class BlurToggleLabel: UILabel {
     override func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         
-        // Убеждаемся, что свойства установлены правильно для IB
         if text == nil || text?.isEmpty == true {
             text = "BlurToggleLabel"
-        }
-        
-        // Показываем состояние размытия в IB
-        if isBlurred {
-            updateBlurredState()
         }
     }
     
