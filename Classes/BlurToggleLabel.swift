@@ -7,10 +7,12 @@
 
 import UIKit
 
+@IBDesignable
 class BlurToggleLabel: UILabel {
     
-    // MARK: - Public Properties
-    public var blurRadius: CGFloat = 5.0 {
+    // MARK: - IBInspectable Properties
+    
+    @IBInspectable var blurRadius: CGFloat = 5.0 {
         didSet {
             if isBlurred {
                 updateBlurredState()
@@ -18,13 +20,31 @@ class BlurToggleLabel: UILabel {
         }
     }
     
-    public var isBlurred: Bool = false {
+    @IBInspectable var isBlurred: Bool = false {
         didSet {
             updateAppearance()
         }
     }
     
-    public var animationDuration: TimeInterval = 0.3
+    @IBInspectable var animationDuration: Double = 0.3 {
+        didSet {
+            // Обновляем анимацию если нужно
+        }
+    }
+    
+    @IBInspectable var enableTapGesture: Bool = true {
+        didSet {
+            setupTapGesture()
+        }
+    }
+    
+    @IBInspectable var blurColor: UIColor = .clear {
+        didSet {
+            if isBlurred {
+                updateBlurredState()
+            }
+        }
+    }
     
     // MARK: - Private Properties
     private var blurredImageView: UIImageView?
@@ -48,8 +68,17 @@ class BlurToggleLabel: UILabel {
     
     // MARK: - Setup Methods
     private func setupTapGesture() {
-        tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
-        addGestureRecognizer(tapGesture!)
+        // Удаляем старый жест если есть
+        if let tapGesture = tapGesture {
+            removeGestureRecognizer(tapGesture)
+        }
+        
+        if enableTapGesture {
+            tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap))
+            addGestureRecognizer(tapGesture!)
+        } else {
+            tapGesture = nil
+        }
     }
     
     @objc private func handleTap() {
@@ -68,6 +97,7 @@ class BlurToggleLabel: UILabel {
     private func updateBlurredState() {
         // Удаляем предыдущее размытое изображение
         blurredImageView?.removeFromSuperview()
+        blurredImageView = nil
         
         // Создаем размытое изображение текста
         guard let blurredView = createBlurredImageView() else {
@@ -109,8 +139,8 @@ class BlurToggleLabel: UILabel {
         
         // Создаем атрибуты текста
         let attributes: [NSAttributedString.Key: Any] = [
-            .font: self.font as Any,
-            .foregroundColor: self.textColor as Any
+            .font: self.font ?? UIFont.systemFont(ofSize: 17),
+            .foregroundColor: self.textColor ?? UIColor.black
         ]
         
         // Создаем атрибутированную строку
@@ -126,6 +156,14 @@ class BlurToggleLabel: UILabel {
         // Создаем графический контекст
         UIGraphicsBeginImageContextWithOptions(textSize, false, 0.0)
         defer { UIGraphicsEndImageContext() }
+        
+        guard let context = UIGraphicsGetCurrentContext() else { return nil }
+        
+        // Устанавливаем цвет фона если задан
+        if blurColor != .clear {
+            context.setFillColor(blurColor.cgColor)
+            context.fill(CGRect(origin: .zero, size: textSize))
+        }
         
         // Рисуем текст
         attributedString.draw(in: CGRect(origin: .zero, size: textSize))
@@ -144,8 +182,8 @@ class BlurToggleLabel: UILabel {
         guard let outputImage = filter.outputImage else { return nil }
         
         // Создаем UIImage из CIImage
-        let context = CIContext()
-        guard let cgImage = context.createCGImage(outputImage, from: outputImage.extent) else { return nil }
+        let ciContext = CIContext()
+        guard let cgImage = ciContext.createCGImage(outputImage, from: outputImage.extent) else { return nil }
         
         let blurredImage = UIImage(cgImage: cgImage)
         
@@ -168,7 +206,31 @@ class BlurToggleLabel: UILabel {
         
         // Обновляем позицию размытого изображения при изменении layout
         if isBlurred {
-            blurredImageView?.center = CGPoint(x: bounds.midX, y: bounds.midY)
+            updateBlurredImageViewPosition()
+        }
+    }
+    
+    private func updateBlurredImageViewPosition() {
+        guard let blurredImageView = blurredImageView else { return }
+        
+        if let text = self.text, !text.isEmpty {
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: self.font ?? UIFont.systemFont(ofSize: 17)
+            ]
+            
+            let attributedString = NSAttributedString(string: text, attributes: attributes)
+            let textSize = attributedString.boundingRect(
+                with: CGSize(width: bounds.width, height: .greatestFiniteMagnitude),
+                options: [.usesLineFragmentOrigin, .usesFontLeading],
+                context: nil
+            ).size
+            
+            blurredImageView.frame = CGRect(
+                x: (bounds.width - textSize.width) / 2,
+                y: (bounds.height - textSize.height) / 2,
+                width: textSize.width,
+                height: textSize.height
+            )
         }
     }
     
@@ -209,6 +271,21 @@ class BlurToggleLabel: UILabel {
             }
         } else {
             self.isBlurred = blurred
+        }
+    }
+    
+    // MARK: - Interface Builder Preparation
+    override func prepareForInterfaceBuilder() {
+        super.prepareForInterfaceBuilder()
+        
+        // Убеждаемся, что свойства установлены правильно для IB
+        if text == nil || text?.isEmpty == true {
+            text = "BlurToggleLabel"
+        }
+        
+        // Показываем состояние размытия в IB
+        if isBlurred {
+            updateBlurredState()
         }
     }
     
