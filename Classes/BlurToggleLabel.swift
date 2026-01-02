@@ -250,17 +250,8 @@ class BlurToggleLabel: UILabel {
             originX = 0
         }
         
-        // Вертикальное выравнивание
-        switch contentMode {
-        case .top, .topLeft, .topRight, .topCenter:
-            originY = 0
-        case .center, .bottomCenter:
-            originY = (labelSize.height - textSize.height) / 2
-        case .bottom, .bottomLeft, .bottomRight:
-            originY = labelSize.height - textSize.height
-        default:
-            originY = (labelSize.height - textSize.height) / 2
-        }
+        // Вертикальное выравнивание (используем bounds label)
+        originY = (labelSize.height - textSize.height) / 2
         
         return CGPoint(x: originX, y: originY)
     }
