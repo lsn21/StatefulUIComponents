@@ -27,38 +27,38 @@ public class StatefulUIButton: UIButton {
         didSet { updateBackgroundColor() }
     }
     
-    @IBInspectable public var normalTitleColor: UIColor? {
-        didSet { updateTitleColor() }
-    }
-    
-    @IBInspectable public var highlightedTitleColor: UIColor? {
-        didSet { updateTitleColor() }
-    }
-    
-    @IBInspectable public var selectedTitleColor: UIColor? {
-        didSet { updateTitleColor() }
-    }
-    
-    @IBInspectable public var disabledTitleColor: UIColor? {
-        didSet { updateTitleColor() }
-    }
+//    @IBInspectable public var normalTitleColor: UIColor? {
+//        didSet { updateTitleColor() }
+//    }
+//    
+//    @IBInspectable public var highlightedTitleColor: UIColor? {
+//        didSet { updateTitleColor() }
+//    }
+//    
+//    @IBInspectable public var selectedTitleColor: UIColor? {
+//        didSet { updateTitleColor() }
+//    }
+//    
+//    @IBInspectable public var disabledTitleColor: UIColor? {
+//        didSet { updateTitleColor() }
+//    }
     
     // MARK: - Font properties
-    public var normalFont: UIFont? {
-        didSet { updateFont() }
-    }
-    
-    public var highlightedFont: UIFont? {
-        didSet { updateFont() }
-    }
-    
-    public var selectedFont: UIFont? {
-        didSet { updateFont() }
-    }
-    
-    public var disabledFont: UIFont? {
-        didSet { updateFont() }
-    }
+//    public var normalFont: UIFont? {
+//        didSet { updateFont() }
+//    }
+//    
+//    public var highlightedFont: UIFont? {
+//        didSet { updateFont() }
+//    }
+//    
+//    public var selectedFont: UIFont? {
+//        didSet { updateFont() }
+//    }
+//    
+//    public var disabledFont: UIFont? {
+//        didSet { updateFont() }
+//    }
     
     // MARK: - Number of lines (IB compatible)
     @IBInspectable public var normalNumberOfLines: Int = 1 {
@@ -199,8 +199,8 @@ public class StatefulUIButton: UIButton {
     public override func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         updateBackgroundColor()
-        updateTitleColor()
-        updateFont()
+//        updateTitleColor()
+//        updateFont()
         updateNumberOfLines()
     }
     
