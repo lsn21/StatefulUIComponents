@@ -11,17 +11,20 @@ import UIKit
 private struct UIViewAssociatedKeys {
     static var borderColorName = "borderColorName"
     static var shadowColorName = "shadowColorName"
-    static var figmaShadowSpread = "figmaShadowSpread"
-    static var figmaShadowBlur = "figmaShadowBlur"
+    static var shadowSpread = "shadowSpread"
+    static var shadowBlur = "shadowBlur"
+    static var shadowOpacity = "shadowOpacity"
+    static var shadowX = "shadowX"
+    static var shadowY = "shadowY"
 }
 
 // MARK: - IBInspectable Extension for UIView
 public extension UIView {
     
-    // MARK: - Figma Shadow Properties (прямой перенос из Figma)
+    // MARK: - Figma Shadow Properties (сокращенные названия для IB)
     
-    /// Figma: Shadow Color Name (from Assets)
-    @IBInspectable var figmaShadowColorName: String? {
+    /// Shadow Color Name (from Assets) - короткое название
+    @IBInspectable var fsColorName: String? {
         get {
             return objc_getAssociatedObject(self, &UIViewAssociatedKeys.shadowColorName) as? String
         }
@@ -31,73 +34,75 @@ public extension UIView {
         }
     }
     
-    /// Figma: Shadow Color (UIColor)
-    @IBInspectable var figmaShadowColor: UIColor? {
+    /// Shadow Color (UIColor) - короткое название
+    @IBInspectable var fsColor: UIColor? {
         get {
-            return UIColor(cgColor: layer.shadowColor ?? UIColor.clear.cgColor)
+            guard let shadowColor = layer.shadowColor else { return nil }
+            return UIColor(cgColor: shadowColor)
         }
         set {
+            // Очищаем имя цвета при установке UIColor
             objc_setAssociatedObject(self, &UIViewAssociatedKeys.shadowColorName, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             updateFigmaShadow()
         }
     }
     
-    /// Figma: Shadow Opacity (0-100%)
-    @IBInspectable var figmaShadowOpacity: Float {
+    /// Shadow Opacity (0-100%) - короткое название
+    @IBInspectable var fsOpacity: Float {
         get {
-            return layer.shadowOpacity * 100 // Конвертируем обратно в 0-100
+            return (objc_getAssociatedObject(self, &UIViewAssociatedKeys.shadowOpacity) as? Float) ?? (layer.shadowOpacity * 100)
         }
         set {
-            objc_setAssociatedObject(self, "figmaShadowOpacity", newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &UIViewAssociatedKeys.shadowOpacity, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             updateFigmaShadow()
         }
     }
     
-    /// Figma: Shadow X Offset (horizontal)
-    @IBInspectable var figmaShadowX: CGFloat {
+    /// Shadow X Offset (horizontal) - короткое название
+    @IBInspectable var fsX: CGFloat {
         get {
-            return layer.shadowOffset.width
+            return (objc_getAssociatedObject(self, &UIViewAssociatedKeys.shadowX) as? CGFloat) ?? layer.shadowOffset.width
         }
         set {
-            objc_setAssociatedObject(self, "figmaShadowX", newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &UIViewAssociatedKeys.shadowX, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             updateFigmaShadow()
         }
     }
     
-    /// Figma: Shadow Y Offset (vertical)
-    @IBInspectable var figmaShadowY: CGFloat {
+    /// Shadow Y Offset (vertical) - короткое название
+    @IBInspectable var fsY: CGFloat {
         get {
-            return layer.shadowOffset.height
+            return (objc_getAssociatedObject(self, &UIViewAssociatedKeys.shadowY) as? CGFloat) ?? layer.shadowOffset.height
         }
         set {
-            objc_setAssociatedObject(self, "figmaShadowY", newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &UIViewAssociatedKeys.shadowY, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             updateFigmaShadow()
         }
     }
     
-    /// Figma: Shadow Blur (прямое значение из Figma)
-    @IBInspectable var figmaShadowBlur: CGFloat {
+    /// Shadow Blur - короткое название
+    @IBInspectable var fsBlur: CGFloat {
         get {
-            return (objc_getAssociatedObject(self, &UIViewAssociatedKeys.figmaShadowBlur) as? CGFloat) ?? layer.shadowRadius * 2
+            return (objc_getAssociatedObject(self, &UIViewAssociatedKeys.shadowBlur) as? CGFloat) ?? (layer.shadowRadius * 2)
         }
         set {
-            objc_setAssociatedObject(self, &UIViewAssociatedKeys.figmaShadowBlur, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &UIViewAssociatedKeys.shadowBlur, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             updateFigmaShadow()
         }
     }
     
-    /// Figma: Shadow Spread (специфичный параметр Figma)
-    @IBInspectable var figmaShadowSpread: CGFloat {
+    /// Shadow Spread - короткое название
+    @IBInspectable var fsSpread: CGFloat {
         get {
-            return (objc_getAssociatedObject(self, &UIViewAssociatedKeys.figmaShadowSpread) as? CGFloat) ?? 0
+            return (objc_getAssociatedObject(self, &UIViewAssociatedKeys.shadowSpread) as? CGFloat) ?? 0
         }
         set {
-            objc_setAssociatedObject(self, &UIViewAssociatedKeys.figmaShadowSpread, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, &UIViewAssociatedKeys.shadowSpread, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
             updateFigmaShadow()
         }
     }
     
-    // MARK: - Border Properties (оставляем как было)
+    // MARK: - Border Properties (короткие названия)
     
     @IBInspectable var borderColorName: String? {
         get {
@@ -109,9 +114,10 @@ public extension UIView {
         }
     }
     
-    @IBInspectable var borderUIColor: UIColor? {
+    @IBInspectable var borderColor: UIColor? {
         get {
-            return UIColor(cgColor: layer.borderColor ?? UIColor.clear.cgColor)
+            guard let borderColor = layer.borderColor else { return nil }
+            return UIColor(cgColor: borderColor)
         }
         set {
             layer.borderColor = newValue?.cgColor
@@ -121,7 +127,7 @@ public extension UIView {
         }
     }
     
-    @IBInspectable var borderWidthIB: CGFloat {
+    @IBInspectable var borderWidth: CGFloat {
         get {
             return layer.borderWidth
         }
@@ -130,15 +136,15 @@ public extension UIView {
         }
     }
     
-    // MARK: - Corner Radius Properties (оставляем как было)
+    // MARK: - Corner Radius Properties (короткие названия)
     
-    @IBInspectable var cornerRadiusIB: CGFloat {
+    @IBInspectable var cornerRadius: CGFloat {
         get {
             return layer.cornerRadius
         }
         set {
             layer.cornerRadius = newValue
-            updateFigmaShadow() // Обновляем shadowPath при изменении cornerRadius
+            updateFigmaShadow()
         }
     }
     
@@ -165,19 +171,19 @@ public extension UIView {
     // MARK: - Private Methods
     
     private func updateFigmaShadow() {
-        // Получаем актуальные значения
-        let opacity = (objc_getAssociatedObject(self, "figmaShadowOpacity") as? Float) ?? 0
-        let x = (objc_getAssociatedObject(self, "figmaShadowX") as? CGFloat) ?? 0
-        let y = (objc_getAssociatedObject(self, "figmaShadowY") as? CGFloat) ?? 0
-        let blur = figmaShadowBlur
-        let spread = figmaShadowSpread
+        // Получаем актуальные значения из associated objects
+        let opacity = fsOpacity
+        let x = fsX
+        let y = fsY
+        let blur = fsBlur
+        let spread = fsSpread
         
         // Определяем цвет тени
         let shadowColor: UIColor?
-        if let colorName = figmaShadowColorName, let color = UIColor(named: colorName) {
+        if let colorName = fsColorName, let color = UIColor(named: colorName) {
             shadowColor = color
         } else {
-            shadowColor = figmaShadowColor
+            shadowColor = fsColor
         }
         
         guard let color = shadowColor else {
@@ -188,7 +194,7 @@ public extension UIView {
         // Применяем тень с учетом spread
         applyFigmaShadow(
             color: color,
-            opacity: opacity / 100, // Конвертируем 0-100 → 0.0-1.0
+            opacity: opacity / 400,
             x: x,
             y: y,
             blur: blur,
@@ -200,20 +206,26 @@ public extension UIView {
         layer.shadowColor = color.cgColor
         layer.shadowOpacity = opacity
         layer.shadowOffset = CGSize(width: x, height: y)
-        layer.shadowRadius = blur / 2 // Figma blur → iOS radius (blur / 2)
+        layer.shadowRadius = blur / 2
         
-        // Обрабатываем spread через shadowPath
+        // Обрабатываем spread через shadowPath с учетом cornerRadius
         if spread == 0 {
             layer.shadowPath = nil
         } else {
             let dx = -spread
             let rect = bounds.insetBy(dx: dx, dy: dx)
-            layer.shadowPath = UIBezierPath(rect: rect).cgPath
+            
+            // Используем cornerRadius слоя для создания скругленного пути
+            let cornerRadius = layer.cornerRadius
+            layer.shadowPath = UIBezierPath(
+                roundedRect: rect,
+                cornerRadius: cornerRadius
+            ).cgPath
         }
         
         layer.masksToBounds = false
     }
-    
+
     private func updateBorderColor() {
         guard let colorName = borderColorName, let color = UIColor(named: colorName) else { return }
         layer.borderColor = color.cgColor
@@ -231,29 +243,45 @@ public extension UIView {
     }
     
     private func setCornerState(_ enabled: Bool, for corner: UIRectCorner) {
-        var mask = layer.maskedCorners
+        var corners = layer.maskedCorners
         
         switch corner {
         case .topLeft:
-            enabled ? mask.insert(.layerMinXMinYCorner) : mask.remove(.layerMinXMinYCorner)
+            if enabled {
+                corners.insert(.layerMinXMinYCorner)
+            } else {
+                corners.remove(.layerMinXMinYCorner)
+            }
         case .topRight:
-            enabled ? mask.insert(.layerMaxXMinYCorner) : mask.remove(.layerMaxXMinYCorner)
+            if enabled {
+                corners.insert(.layerMaxXMinYCorner)
+            } else {
+                corners.remove(.layerMaxXMinYCorner)
+            }
         case .bottomLeft:
-            enabled ? mask.insert(.layerMinXMaxYCorner) : mask.remove(.layerMinXMaxYCorner)
+            if enabled {
+                corners.insert(.layerMinXMaxYCorner)
+            } else {
+                corners.remove(.layerMinXMaxYCorner)
+            }
         case .bottomRight:
-            enabled ? mask.insert(.layerMaxXMaxYCorner) : mask.remove(.layerMaxXMaxYCorner)
+            if enabled {
+                corners.insert(.layerMaxXMaxYCorner)
+            } else {
+                corners.remove(.layerMaxXMaxYCorner)
+            }
         default: break
         }
         
-        layer.maskedCorners = mask
+        layer.maskedCorners = corners
         layer.masksToBounds = true
-        updateFigmaShadow() // Обновляем тень при изменении углов
+        updateFigmaShadow()
     }
     
     // MARK: - Public Methods для Figma Shadows
     
     /// Применить тень из Figma со всеми параметрами
-    func applyFigmaShadow(
+    func applyFigmaStyleShadow(
         color: UIColor,
         opacity: Float, // 0-100%
         x: CGFloat,
@@ -262,20 +290,14 @@ public extension UIView {
         spread: CGFloat
     ) {
         // Сохраняем значения для IB
-        objc_setAssociatedObject(self, "figmaShadowOpacity", opacity, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        objc_setAssociatedObject(self, "figmaShadowX", x, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        objc_setAssociatedObject(self, "figmaShadowY", y, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        objc_setAssociatedObject(self, &UIViewAssociatedKeys.figmaShadowBlur, blur, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        objc_setAssociatedObject(self, &UIViewAssociatedKeys.figmaShadowSpread, spread, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        fsColor = color
+        fsOpacity = opacity
+        fsX = x
+        fsY = y
+        fsBlur = blur
+        fsSpread = spread
         
-        applyFigmaShadow(
-            color: color,
-            opacity: opacity / 100,
-            x: x,
-            y: y,
-            blur: blur,
-            spread: spread
-        )
+        updateFigmaShadow()
     }
     
     /// Удалить тень
@@ -287,35 +309,17 @@ public extension UIView {
         layer.shadowPath = nil
         
         // Сбрасываем сохраненные значения
-        objc_setAssociatedObject(self, "figmaShadowOpacity", Float(0), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        objc_setAssociatedObject(self, &UIViewAssociatedKeys.figmaShadowBlur, CGFloat(0), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        objc_setAssociatedObject(self, &UIViewAssociatedKeys.figmaShadowSpread, CGFloat(0), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-    }
-    
-    /// Конвертировать тень из Figma в iOS параметры
-    func convertFigmaToiOSShadow(
-        x: CGFloat,
-        y: CGFloat,
-        blur: CGFloat,
-        spread: CGFloat,
-        opacity: Float
-    ) -> (offset: CGSize, radius: CGFloat, opacity: Float, path: CGPath?) {
-        let offset = CGSize(width: x, height: y)
-        let radius = blur / 2
-        let iosOpacity = opacity / 100
-        
-        var path: CGPath? = nil
-        if spread != 0 {
-            let dx = -spread
-            let rect = bounds.insetBy(dx: dx, dy: dx)
-            path = UIBezierPath(rect: rect).cgPath
-        }
-        
-        return (offset, radius, iosOpacity, path)
+        fsOpacity = 0
+        fsBlur = 0
+        fsSpread = 0
+        fsX = 0
+        fsY = 0
+        fsColor = nil
+        fsColorName = nil
     }
 }
 
-// MARK: - Остальные методы (сохраняем без изменений)
+// MARK: - Остальные методы
 
 public extension UIView {
     func roundCorners(_ corners: UIRectCorner, radius: CGFloat) {
@@ -327,7 +331,7 @@ public extension UIView {
     }
     
     func applyShadow(color: UIColor, opacity: Float, radius: CGFloat, offset: CGSize) {
-        applyFigmaShadow(color: color, opacity: opacity * 100, x: offset.width, y: offset.height, blur: radius * 2, spread: 0)
+        applyFigmaStyleShadow(color: color, opacity: opacity * 100, x: offset.width, y: offset.height, blur: radius * 2, spread: 0)
     }
     
     func addBorder(color: UIColor, width: CGFloat) {
@@ -430,19 +434,6 @@ public extension UIView {
         self.init(frame: .zero)
         self.layer.cornerRadius = cornerRadius
         self.layer.masksToBounds = true
-    }
-}
-
-// MARK: - Utility Extensions
-extension UIColor {
-    var hexString: String {
-        guard let components = cgColor.components, components.count >= 3 else {
-            return "#000000"
-        }
-        let r = Float(components[0])
-        let g = Float(components[1])
-        let b = Float(components[2])
-        return String(format: "#%02lX%02lX%02lX", lroundf(r * 255), lroundf(g * 255), lroundf(b * 255))
     }
 }
 
