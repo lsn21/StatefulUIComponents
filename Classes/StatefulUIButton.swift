@@ -27,6 +27,38 @@ public class StatefulUIButton: UIButton {
         didSet { updateBackgroundColor() }
     }
     
+    @IBInspectable public var normalTitleColor: UIColor? {
+        didSet { updateTitleColor() }
+    }
+    
+    @IBInspectable public var highlightedTitleColor: UIColor? {
+        didSet { updateTitleColor() }
+    }
+    
+    @IBInspectable public var selectedTitleColor: UIColor? {
+        didSet { updateTitleColor() }
+    }
+    
+    @IBInspectable public var disabledTitleColor: UIColor? {
+        didSet { updateTitleColor() }
+    }
+    
+    // MARK: - Font properties
+    public var normalFont: UIFont? {
+        didSet { updateFont() }
+    }
+    
+    public var highlightedFont: UIFont? {
+        didSet { updateFont() }
+    }
+    
+    public var selectedFont: UIFont? {
+        didSet { updateFont() }
+    }
+    
+    public var disabledFont: UIFont? {
+        didSet { updateFont() }
+    }
     
     // MARK: - Number of lines (IB compatible)
     @IBInspectable public var normalNumberOfLines: Int = 1 {
@@ -65,6 +97,20 @@ public class StatefulUIButton: UIButton {
     }
     
     // MARK: - Override Methods
+    override public func titleColor(for state: UIControl.State) -> UIColor? {
+        switch state {
+        case .normal:
+            return normalTitleColor ?? super.titleColor(for: .normal)
+        case .highlighted:
+            return highlightedTitleColor ?? normalTitleColor ?? super.titleColor(for: .highlighted)
+        case .selected:
+            return selectedTitleColor ?? normalTitleColor ?? super.titleColor(for: .selected)
+        case .disabled:
+            return disabledTitleColor ?? super.titleColor(for: .disabled)
+        default:
+            return super.titleColor(for: state)
+        }
+    }
     
     override public var isHighlighted: Bool {
         didSet {
@@ -94,6 +140,8 @@ public class StatefulUIButton: UIButton {
     @objc private func updateAppearance() {
         UIView.animate(withDuration: 0.2) {
             self.updateBackgroundColor()
+            self.updateTitleColor()
+            self.updateFont()
             self.updateNumberOfLines()
         }
     }
@@ -110,6 +158,25 @@ public class StatefulUIButton: UIButton {
             backgroundColor = disabledBackgroundColor ?? originalBackgroundColor?.withAlphaComponent(0.5)
         default:
             backgroundColor = originalBackgroundColor
+        }
+    }
+    
+    private func updateTitleColor() {
+        setTitleColor(titleColor(for: state), for: state)
+    }
+    
+    private func updateFont() {
+        switch state {
+        case .normal:
+            titleLabel?.font = normalFont
+        case .highlighted:
+            titleLabel?.font = highlightedFont ?? normalFont
+        case .selected:
+            titleLabel?.font = selectedFont ?? normalFont
+        case .disabled:
+            titleLabel?.font = disabledFont ?? normalFont
+        default:
+            break
         }
     }
     
@@ -132,6 +199,8 @@ public class StatefulUIButton: UIButton {
     public override func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         updateBackgroundColor()
+        updateTitleColor()
+        updateFont()
         updateNumberOfLines()
     }
     
