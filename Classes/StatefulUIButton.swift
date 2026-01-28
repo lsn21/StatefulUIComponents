@@ -166,18 +166,18 @@ public class StatefulUIButton: UIButton {
     }
     
     private func updateFont() {
-        switch state {
-        case .normal:
-            titleLabel?.font = normalFont
-        case .highlighted:
-            titleLabel?.font = highlightedFont ?? normalFont
-        case .selected:
-            titleLabel?.font = selectedFont ?? normalFont
-        case .disabled:
-            titleLabel?.font = disabledFont ?? normalFont
-        default:
-            break
-        }
+//        switch state {
+//        case .normal:
+//            titleLabel?.font = normalFont
+//        case .highlighted:
+//            titleLabel?.font = highlightedFont ?? normalFont
+//        case .selected:
+//            titleLabel?.font = selectedFont ?? normalFont
+//        case .disabled:
+//            titleLabel?.font = disabledFont ?? normalFont
+//        default:
+//            break
+//        }
     }
     
     private func updateNumberOfLines() {

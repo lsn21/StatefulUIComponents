@@ -64,6 +64,19 @@ public class PlaceholderTextView: UITextView {
         setupPlaceholder()
     }
 
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        // Обновляем максимальную ширину для многострочного placeholder,
+        // чтобы текст корректно переносился по словам.
+        if let placeholderLabel = placeholderLabel {
+            let insets = textContainerInset
+            let availableWidth = bounds.width - insets.left - insets.right - 10
+            if availableWidth > 0 {
+                placeholderLabel.preferredMaxLayoutWidth = availableWidth
+            }
+        }
+    }
+
     // MARK: - Setup Methods
     private func setupPlaceholder() {
         super.delegate = self // ← Важно: используем super.delegate
@@ -71,6 +84,7 @@ public class PlaceholderTextView: UITextView {
         // Создаем placeholder label
         placeholderLabel = UILabel()
         placeholderLabel.numberOfLines = 0
+        placeholderLabel.lineBreakMode = .byWordWrapping
         placeholderLabel.textColor = placeholderColor
         placeholderLabel.font = placeholderFont
         placeholderLabel.text = placeholder
