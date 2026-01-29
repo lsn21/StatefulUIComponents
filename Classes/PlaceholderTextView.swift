@@ -53,6 +53,19 @@ public class PlaceholderTextView: UITextView {
     // MARK: - Private Properties
     private var placeholderLabel: UILabel!
 
+    // MARK: - Text
+    public override var text: String! {
+        didSet {
+            updatePlaceholderVisibility()
+        }
+    }
+
+    public override var attributedText: NSAttributedString! {
+        didSet {
+            updatePlaceholderVisibility()
+        }
+    }
+
     // MARK: - Initialization
     public override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
@@ -111,8 +124,9 @@ public class PlaceholderTextView: UITextView {
     }
     
     private func updatePlaceholderVisibility() {
-        let isHidden = !(text?.isEmpty ?? true)
-        placeholderLabel.isHidden = isHidden
+        guard placeholderLabel != nil else { return }
+        let isEmpty = (text ?? "").isEmpty
+        placeholderLabel.isHidden = !isEmpty
     }
 
     // MARK: - Interface Builder Support
