@@ -58,7 +58,7 @@ final class PercentageProgressBar: UIView {
         }
     }
 
-    @IBInspectable var cornerRadius: CGFloat = 6 {
+    @IBInspectable override var cornerRadius: CGFloat = 6 {
         didSet {
             setNeedsLayout()
         }
