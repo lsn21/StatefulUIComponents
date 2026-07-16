@@ -1,12 +1,13 @@
 Pod::Spec.new do |s|
   s.name             = 'StatefulUIComponents'
-  s.version          = '1.2.1' # Обновите версию
+  s.version          = '1.3.0' # Обновите версию
   s.summary          = 'A collection of customizable UI components with state-specific properties, placeholder text views, and IBInspectable extensions.'
   
   s.description      = <<-DESC
 StatefulUIComponents provides:
 - @IBDesignable StatefulUIButton with state-specific properties
 - PlaceholderTextView with customizable placeholder
+- CircularProgressView ring chart with IBInspectable styling
 - Powerful IBInspectable extensions for all UIView subclasses
                        DESC
 
