@@ -58,7 +58,9 @@ final class PercentageProgressBar: UIView {
         }
     }
 
-    @IBInspectable override var cornerRadius: CGFloat = 6 {
+    /// Corner radius of the progress bar track (not the view layer).
+    /// Named separately because `UIView.cornerRadius` already exists in UIView+IBInspectable.
+    @IBInspectable var barCornerRadius: CGFloat = 6 {
         didSet {
             setNeedsLayout()
         }
@@ -90,7 +92,7 @@ final class PercentageProgressBar: UIView {
         let resolvedBarHeight = min(max(barHeight, 1), bounds.height)
         let barYPosition = (bounds.height - resolvedBarHeight) / 2
         let trackFrame = CGRect(x: 0, y: barYPosition, width: bounds.width, height: resolvedBarHeight)
-        let resolvedCornerRadius = max(0, min(cornerRadius, resolvedBarHeight / 2))
+        let resolvedCornerRadius = max(0, min(barCornerRadius, resolvedBarHeight / 2))
         let progressWidth = trackFrame.width * (clampedProgress / 100)
 
         trackView.frame = trackFrame
