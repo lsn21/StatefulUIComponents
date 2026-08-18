@@ -8,51 +8,51 @@
 import UIKit
 
 @IBDesignable
-final class PercentageProgressBar: UIView {
+public final class PercentageProgressBar: UIView {
 
     private let trackView = UIView()
     private let progressView = UIView()
     private let valueLabel = UILabel()
 
-    @IBInspectable var progress: CGFloat = 0 {
+    @IBInspectable public var progress: CGFloat = 0 {
         didSet {
             setNeedsLayout()
             updateAppearance()
         }
     }
 
-    @IBInspectable var barHeight: CGFloat = 12 {
+    @IBInspectable public var barHeight: CGFloat = 12 {
         didSet {
             invalidateIntrinsicContentSize()
             setNeedsLayout()
         }
     }
 
-    @IBInspectable var trackColor: UIColor = UIColor.systemGray5 {
+    @IBInspectable public var trackColor: UIColor = UIColor.systemGray5 {
         didSet {
             updateAppearance()
         }
     }
 
-    @IBInspectable var progressColor: UIColor = UIColor.systemGreen {
+    @IBInspectable public var progressColor: UIColor = UIColor.systemGreen {
         didSet {
             updateAppearance()
         }
     }
 
-    @IBInspectable var textColor: UIColor = UIColor.white {
+    @IBInspectable public var textColor: UIColor = UIColor.white {
         didSet {
             valueLabel.textColor = textColor
         }
     }
 
-    @IBInspectable var textFontSize: CGFloat = 12 {
+    @IBInspectable public var textFontSize: CGFloat = 12 {
         didSet {
             updateFont()
         }
     }
 
-    @IBInspectable var textFont: String = "" {
+    @IBInspectable public var textFont: String = "" {
         didSet {
             updateFont()
         }
@@ -60,18 +60,18 @@ final class PercentageProgressBar: UIView {
 
     /// Corner radius of the progress bar track (not the view layer).
     /// Named separately because `UIView.cornerRadius` already exists in UIView+IBInspectable.
-    @IBInspectable var barCornerRadius: CGFloat = 6 {
+    @IBInspectable public var barCornerRadius: CGFloat = 6 {
         didSet {
             setNeedsLayout()
         }
     }
 
-    override init(frame: CGRect) {
+    public override init(frame: CGRect) {
         super.init(frame: frame)
         commonInit()
     }
 
-    required init?(coder: NSCoder) {
+    public required init?(coder: NSCoder) {
         super.init(coder: coder)
         commonInit()
     }
