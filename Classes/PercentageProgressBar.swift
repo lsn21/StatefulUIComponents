@@ -76,17 +76,17 @@ public final class PercentageProgressBar: UIView {
         commonInit()
     }
 
-    override var intrinsicContentSize: CGSize {
+    public override var intrinsicContentSize: CGSize {
         CGSize(width: UIView.noIntrinsicMetric, height: max(barHeight, textFontSize + 8))
     }
 
-    override func prepareForInterfaceBuilder() {
+    public override func prepareForInterfaceBuilder() {
         super.prepareForInterfaceBuilder()
         commonInit()
         updateAppearance()
     }
 
-    override func layoutSubviews() {
+    public override func layoutSubviews() {
         super.layoutSubviews()
 
         let resolvedBarHeight = min(max(barHeight, 1), bounds.height)
