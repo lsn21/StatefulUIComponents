@@ -76,6 +76,12 @@ public class StatefulUIButton: UIButton {
     @IBInspectable public var disabledNumberOfLines: Int = 1 {
         didSet { updateNumberOfLines() }
     }
+
+    /// Puts the image on the trailing side and the title on the leading side.
+    /// Default `UIButton` order is image, then title.
+    @IBInspectable public var imageOnTrailing: Bool = false {
+        didSet { applyImagePlacement() }
+    }
     
     // MARK: - Private Properties
     private var originalBackgroundColor: UIColor?
@@ -94,6 +100,11 @@ public class StatefulUIButton: UIButton {
     private func commonInit() {
         originalBackgroundColor = backgroundColor
         setupObservers()
+    }
+
+    public override func awakeFromNib() {
+        super.awakeFromNib()
+        applyImagePlacement()
     }
     
     // MARK: - Override Methods
@@ -180,6 +191,21 @@ public class StatefulUIButton: UIButton {
 //        }
     }
     
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        guard imageOnTrailing, configuration == nil else { return }
+        imageView?.semanticContentAttribute = .forceLeftToRight
+    }
+
+    private func applyImagePlacement() {
+        if var buttonConfiguration = configuration {
+            buttonConfiguration.imagePlacement = imageOnTrailing ? .trailing : .leading
+            configuration = buttonConfiguration
+            return
+        }
+        semanticContentAttribute = imageOnTrailing ? .forceRightToLeft : .unspecified
+    }
+
     private func updateNumberOfLines() {
         switch state {
         case .normal:
@@ -202,6 +228,7 @@ public class StatefulUIButton: UIButton {
         updateTitleColor()
         updateFont()
         updateNumberOfLines()
+        applyImagePlacement()
     }
     
     // MARK: - Deinitialization
